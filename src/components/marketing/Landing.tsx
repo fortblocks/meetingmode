@@ -8,8 +8,16 @@ const benefits = [
     line: "The rest of the machine goes quiet so the call can be the only thing.",
   },
   {
+    name: "Briefing",
+    line: "Who is in the room, what is open, what to say. Prep before you join.",
+  },
+  {
     name: "Dated note",
     line: "One file per meeting, already on disk before you join.",
+  },
+  {
+    name: "Capture",
+    line: "Actions, decisions, parked items as you go. Owners and dues, in the note and the inbox.",
   },
   {
     name: "Calendar Join",
@@ -20,16 +28,8 @@ const benefits = [
     line: "Nothing records until you start it. Listening never starts on its own.",
   },
   {
-    name: "Live cues",
-    line: "A quiet nudge while you are in it — not a transcript dump after.",
-  },
-  {
     name: "Wrap-up",
-    line: "You hang up with a page, not a blank.",
-  },
-  {
-    name: "Local",
-    line: "Notes stay on the machine. No account required to start the ritual.",
+    line: "You hang up with a page and an inbox, not a blank.",
   },
   {
     name: "The shortcut",
@@ -41,17 +41,17 @@ const steps = [
   {
     n: "01",
     title: "Flip it on",
-    body: "Click the menu extra, or press the shortcut, when the meeting is about to start.",
+    body: "Click the menu extra, or press the shortcut. Start the next calendar event, a 1:1, standup, or a blank note.",
   },
   {
     n: "02",
-    title: "Join from the extra",
-    body: "The next calendar event is already there. Join, then open the dated note if you want a page in front of you.",
+    title: "Sit in the call",
+    body: "Join from the extra. Check the agenda, capture /a /d /p /q as you go, and watch the leftover time.",
   },
   {
     n: "03",
-    title: "Listen only if you mean it",
-    body: "Start listening after the consent sheet. Live cues stay out of the way. Wrap-up is waiting when you hang up.",
+    title: "Wrap up",
+    body: "Listening is optional. Wrap-up uses what you wrote. Actions land in the inbox for the next time you meet.",
   },
 ];
 
@@ -241,8 +241,8 @@ export function Landing() {
                 <ul className="mt-6 space-y-2.5 text-[15px] text-black/70">
                   <li>Focus on / off</li>
                   <li>Dated notes on disk</li>
+                  <li>Capture, agenda, inbox</li>
                   <li>Calendar Join</li>
-                  <li>Menu extra + shortcut</li>
                 </ul>
                 <Link
                   to="/app"
@@ -265,7 +265,7 @@ export function Landing() {
                   <li>Everything in Trial</li>
                   <li>Consent-first listening</li>
                   <li>Live cues in the meeting</li>
-                  <li>Wrap-up when you hang up</li>
+                  <li>Grok prep and wrap-up</li>
                 </ul>
                 <Link
                   to="/app"

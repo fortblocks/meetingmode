@@ -16,9 +16,15 @@
 		A10000000000000000000027 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* CalendarService.swift */; };
 		A10000000000000000000028 /* FocusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* FocusService.swift */; };
 		A10000000000000000000029 /* HotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* HotkeyService.swift */; };
+		A10000000000000000000061 /* Prefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* Prefs.swift */; };
+		A10000000000000000000062 /* GrokService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000051 /* GrokService.swift */; };
+		A10000000000000000000063 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000052 /* NotificationService.swift */; };
+		A10000000000000000000064 /* SessionHUDController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000053 /* SessionHUDController.swift */; };
+		A10000000000000000000065 /* RitualWindows.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000054 /* RitualWindows.swift */; };
 		A1000000000000000000002A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
 		A1000000000000000000002B /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001C /* EventKit.framework */; };
 		A1000000000000000000002C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* Carbon.framework */; };
+		A10000000000000000000066 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000055 /* UserNotifications.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +43,12 @@
 		A1000000000000000000001C /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A1000000000000000000001D /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		A1000000000000000000001E /* MeetingMode.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeetingMode.entitlements; sourceTree = "<group>"; };
+		A10000000000000000000050 /* Prefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prefs.swift; sourceTree = "<group>"; };
+		A10000000000000000000051 /* GrokService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrokService.swift; sourceTree = "<group>"; };
+		A10000000000000000000052 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		A10000000000000000000053 /* SessionHUDController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionHUDController.swift; sourceTree = "<group>"; };
+		A10000000000000000000054 /* RitualWindows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RitualWindows.swift; sourceTree = "<group>"; };
+		A10000000000000000000055 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +58,7 @@
 			files = (
 				A1000000000000000000002B /* EventKit.framework in Frameworks */,
 				A1000000000000000000002C /* Carbon.framework in Frameworks */,
+				A10000000000000000000066 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,6 +70,7 @@
 			children = (
 				A1000000000000000000001C /* EventKit.framework */,
 				A1000000000000000000001D /* Carbon.framework */,
+				A10000000000000000000055 /* UserNotifications.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -81,6 +95,11 @@
 				A10000000000000000000017 /* CalendarService.swift */,
 				A10000000000000000000018 /* FocusService.swift */,
 				A10000000000000000000019 /* HotkeyService.swift */,
+				A10000000000000000000050 /* Prefs.swift */,
+				A10000000000000000000051 /* GrokService.swift */,
+				A10000000000000000000052 /* NotificationService.swift */,
+				A10000000000000000000053 /* SessionHUDController.swift */,
+				A10000000000000000000054 /* RitualWindows.swift */,
 				A1000000000000000000001A /* Assets.xcassets */,
 				A1000000000000000000001B /* Info.plist */,
 				A1000000000000000000001E /* MeetingMode.entitlements */,
@@ -175,6 +194,11 @@
 				A10000000000000000000027 /* CalendarService.swift in Sources */,
 				A10000000000000000000028 /* FocusService.swift in Sources */,
 				A10000000000000000000029 /* HotkeyService.swift in Sources */,
+				A10000000000000000000061 /* Prefs.swift in Sources */,
+				A10000000000000000000062 /* GrokService.swift in Sources */,
+				A10000000000000000000063 /* NotificationService.swift in Sources */,
+				A10000000000000000000064 /* SessionHUDController.swift in Sources */,
+				A10000000000000000000065 /* RitualWindows.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,13 +245,13 @@
 				CODE_SIGN_ENTITLEMENTS = MeetingMode/MeetingMode.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MeetingMode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = xyz.meetingmode.app;
 				PRODUCT_NAME = "Meeting Mode";
 				SWIFT_VERSION = 5.0;
@@ -241,13 +265,13 @@
 				CODE_SIGN_ENTITLEMENTS = MeetingMode/MeetingMode.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MeetingMode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = xyz.meetingmode.app;
 				PRODUCT_NAME = "Meeting Mode";
 				SWIFT_VERSION = 5.0;

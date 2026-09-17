@@ -1,5 +1,52 @@
 export type ListenMode = "internal" | "sales" | "standup" | "silent";
 
+export type CaptureKind =
+  | "note"
+  | "action"
+  | "decision"
+  | "parked"
+  | "question";
+
+export type Capture = {
+  id: string;
+  kind: CaptureKind;
+  text: string;
+  at: string;
+  owner?: string;
+  due?: string;
+};
+
+export type AgendaItem = {
+  id: string;
+  text: string;
+  done: boolean;
+};
+
+export type ActionItem = {
+  id: string;
+  text: string;
+  owner: string;
+  due: string;
+  done: boolean;
+  createdAt: string;
+  meetingTitle: string;
+  noteId?: string;
+  source: "capture" | "wrapup" | "seed" | "manual";
+};
+
+export type PrepResult = {
+  talkingPoints: string[];
+  remember: string[];
+  questions: string[];
+  source: "grok" | "offline";
+  error?: string;
+};
+
+export type TimeNotice = {
+  kind: "five" | "over";
+  eventTitle: string;
+};
+
 export type MicApp =
   | "Zoom"
   | "Teams"
@@ -37,6 +84,7 @@ export type Settings = {
   listenMode: ListenMode;
   userContext: string;
   agenda: string;
+  warnBeforeEnd: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -52,6 +100,7 @@ export const DEFAULT_SETTINGS: Settings = {
   listenMode: "internal",
   userContext: "Staff engineer at a 40-person B2B product team.",
   agenda: "Pipeline, Acme renewal, staffing for Q4.",
+  warnBeforeEnd: true,
 };
 
 export type CalendarEvent = {
@@ -64,6 +113,8 @@ export type CalendarEvent = {
   url?: string;
   conferenceUrl?: string;
   conferenceLabel?: string;
+  attendees?: string[];
+  agenda?: string[];
 };
 
 export type NoteFile = {
@@ -98,6 +149,7 @@ export type OfferNotification = {
   reason: "mic" | "calendar";
   appName?: MicApp;
   eventTitle?: string;
+  eventId?: string;
 };
 
 export const FAIR_USE_MS = 20 * 60 * 60 * 1000;
@@ -112,6 +164,14 @@ export const MODE_LABEL: Record<ListenMode, string> = {
   sales: "Sales",
   standup: "Standup",
   silent: "Silent",
+};
+
+export const CAPTURE_LABEL: Record<CaptureKind, string> = {
+  note: "Note",
+  action: "Action",
+  decision: "Decision",
+  parked: "Parked",
+  question: "Question",
 };
 
 export const SETTINGS_PATH =

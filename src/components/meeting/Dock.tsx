@@ -32,12 +32,12 @@ export function Dock() {
                     ? `${app.name} is using the microphone`
                     : `Simulate ${app.name} using the microphone`
                   : app.name === "Calendar"
-                    ? "Open notes"
+                    ? "Open briefing"
                     : app.name
               }
               onClick={() => {
                 if (app.mic) simulateMic(active ? null : app.mic);
-                else if (app.name === "Calendar") focusWindow("notes");
+                else if (app.name === "Calendar") focusWindow("briefing");
               }}
               className="flex w-12 flex-col items-center gap-1 sm:w-14"
             >

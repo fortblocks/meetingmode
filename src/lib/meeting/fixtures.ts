@@ -1,3 +1,5 @@
+import type { NoteFile } from "./types";
+
 export const SAMPLE_TRANSCRIPT = `Maya: Thanks for joining — let's start with last week's pipeline.
 Alex: Enterprise is committed on paper, but the Acme renewal is still unsigned.
 Jordan: Usage on Acme dropped 12 percent after the April cutover. They asked for a named CSM.
@@ -68,3 +70,101 @@ export const SAMPLE_NOTES = `- Alex sending Acme usage today
 - Pause self-serve until renewal is signed
 - Thursday Acme call (Maya)
 `;
+
+export function seedHistoryNotes(now = new Date()): NoteFile[] {
+  const day = 24 * 60 * 60 * 1000;
+  const lastWeek = new Date(now.getTime() - 7 * day);
+  const yesterday = new Date(now.getTime() - day);
+  return [
+    {
+      id: "hist-pipeline",
+      filename: fileFor(lastWeek, "0930"),
+      title: "Q3 pipeline review",
+      createdAt: lastWeek.toISOString(),
+      content: `# Q3 pipeline review
+
+- Folder: ~/Meeting Mode/
+- Started: ${lastWeek.toLocaleString()}
+
+## Notes
+
+- Forecast still +8% vs plan
+- Acme legal is slow on the DPA
+- Self-serve experiment is live but noisy
+
+## Actions
+
+- Alex: send usage export before the next review
+- Priya: DPA redlines this week
+
+## Decisions
+
+- Keep self-serve on for one more week
+
+## Parked
+
+- Fourth AE hire
+
+## Open questions
+
+- Do we staff a named CSM for Acme?
+`,
+      summaryFilename: fileFor(lastWeek, "0930").replace(".md", ".summary.md"),
+      summaryContent: `# Wrap-up — Q3 pipeline review
+
+## Summary
+
+Pipeline is ahead of plan. Acme is the only unsigned renewal. Self-serve stays on for one more week.
+
+## Decisions
+
+- Keep self-serve on for one more week
+
+## Actions
+
+- Send usage export — Alex
+- DPA redlines — Priya
+
+## Open questions
+
+- Named CSM for Acme?
+
+## Follow-up email
+
+Hi all — recap from last week's pipeline: Acme still unsigned, usage export coming from Alex, DPA on Priya. Self-serve stays live until we meet again.
+`,
+    },
+    {
+      id: "hist-maya",
+      filename: fileFor(yesterday, "1610"),
+      title: "1:1 with Maya",
+      createdAt: yesterday.toISOString(),
+      content: `# 1:1 with Maya
+
+- Folder: ~/Meeting Mode/
+- Started: ${yesterday.toLocaleString()}
+
+## Notes
+
+- Wants you closer to Acme this quarter
+- Happy with the ritual around calls
+- Drop the weekly status deck if the wrap-up is enough
+
+## Actions
+
+- You: take the Thursday Acme call with Maya
+
+## Decisions
+
+- Status deck is optional if wrap-up emails go out
+`,
+    },
+  ];
+}
+
+function fileFor(d: Date, hm: string) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}-${hm}.md`;
+}

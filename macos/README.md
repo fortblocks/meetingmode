@@ -1,6 +1,6 @@
-# Meeting Mode for Mac — 0.1.0
+# Meeting Mode for Mac — 0.3.0
 
-Native menu-bar app. Open this folder in Xcode on your Mac, run it, and test as a real user.
+Native menu-bar app. Open this folder in Xcode on your Mac, run it, and sit in a real call.
 
 This environment cannot compile or sign a `.app`. You do that locally. When a build is ready, drop the zip/dmg on the download page (`/app`) as the next version.
 
@@ -14,17 +14,23 @@ This environment cannot compile or sign a `.app`. You do that locally. When a bu
 
 Requires macOS 14+ and Xcode 15+.
 
-## What 0.1.0 does
+## What 0.3.0 does
 
 - Menu extra + Control-Option-M
 - Focus hides other apps
-- Dated note at `~/Meeting Mode/YYYY-MM-DD.md`
-- Next Calendar event + Join when a Meet/Zoom/Teams/Webex link is on the event
-- Listening is a consent sheet only (cues + wrap-up in 0.2)
+- Start the next calendar event, or an ad-hoc 1:1 / standup / sales / blank
+- Briefing: people, leftover actions, live agenda, optional Grok prep
+- Dated note at `~/Meeting Mode/` with sections for notes, actions, decisions, parked, questions
+- Capture from a floating HUD or the extra (`/a` `/d` `/p` `/q`, `Alex:` owners, Friday dues)
+- Open-actions inbox at `~/Meeting Mode/inbox.json`
+- Elapsed timer + five-minute / overtime warning
+- Wrap-up from what you captured (Grok if you paste an xAI key in Settings; otherwise an offline draft) — actions feed the inbox
+- 5-minute offer before a conference
+- Listening is still consent-first (live STT in a later build)
 
 ## Publish a version to the download page
 
 1. Product → Archive
 2. Distribute a Developer ID signed app (or copy `Meeting Mode.app` out of the build folder for your own machine)
-3. Zip it as `MeetingMode-0.2.0.zip`
+3. Zip it as `MeetingMode-0.3.0.zip`
 4. Add it under `public/releases/` and bump the version list in `src/components/marketing/Download.tsx`

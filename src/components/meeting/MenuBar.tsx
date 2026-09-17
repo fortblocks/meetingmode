@@ -1,6 +1,6 @@
 import { formatHotkey } from "@/lib/meeting/hotkey";
-import { formatClock } from "@/lib/utils";
-import { useMeeting } from "@/lib/meeting/store";
+import { formatClock, formatElapsed } from "@/lib/utils";
+import { selectElapsedMs, useMeeting } from "@/lib/meeting/store";
 import { MeetingIcon } from "./MeetingIcon";
 import { StatusPopover } from "./StatusPopover";
 
@@ -12,6 +12,8 @@ export function MenuBar({ clock }: { clock: Date }) {
   const popoverOpen = useMeeting((s) => s.popoverOpen);
   const togglePopover = useMeeting((s) => s.togglePopover);
   const hotkey = useMeeting((s) => s.settings.hotkey);
+  const elapsed = useMeeting(selectElapsedMs);
+  const captures = useMeeting((s) => s.captures);
 
   return (
     <header className="relative z-40 flex h-8 min-h-8 items-center justify-between px-3 text-menubar text-fg md:h-7">
@@ -55,8 +57,9 @@ export function MenuBar({ clock }: { clock: Date }) {
                 Listening
               </span>
             ) : isOn ? (
-              <span className="hidden text-micro font-medium tracking-wide uppercase sm:inline">
-                On
+              <span className="hidden tabular-nums text-micro font-medium sm:inline">
+                {formatElapsed(elapsed)}
+                {captures.length ? ` · ${captures.length}` : ""}
               </span>
             ) : null}
           </button>

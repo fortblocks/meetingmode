@@ -3,6 +3,8 @@ import { formatHotkey } from "@/lib/meeting/hotkey";
 import { useMeeting } from "@/lib/meeting/store";
 import { useMeetingHotkey } from "@/lib/meeting/use-hotkey";
 import { useListening } from "@/lib/meeting/use-listening";
+import { ActionsWindow } from "./ActionsWindow";
+import { BriefingWindow } from "./BriefingWindow";
 import { DesktopIcons } from "./DesktopIcons";
 import { Dock } from "./Dock";
 import { LiveCuesPanel } from "./LiveCuesPanel";
@@ -10,8 +12,17 @@ import { MenuBar } from "./MenuBar";
 import { NotesWindow } from "./NotesWindow";
 import { NotificationStack } from "./NotificationStack";
 import { ConsentSheet, TrialSheet } from "./Sheets";
+import { SessionBar } from "./SessionBar";
 import { SettingsWindow } from "./SettingsWindow";
 import { WrapUpWindow } from "./WrapUpWindow";
+
+const WINDOWS = [
+  "settings",
+  "notes",
+  "wrapup",
+  "briefing",
+  "actions",
+] as const;
 
 export function MacDesktop() {
   const hydrate = useMeeting((s) => s.hydrate);
@@ -33,7 +44,7 @@ export function MacDesktop() {
   useEffect(() => {
     hydrate();
     tick();
-    const id = window.setInterval(() => useMeeting.getState().tick(), 15_000);
+    const id = window.setInterval(() => useMeeting.getState().tick(), 1000);
     return () => window.clearInterval(id);
   }, [hydrate, tick]);
 
@@ -41,7 +52,7 @@ export function MacDesktop() {
     if (isOn) setHint(false);
   }, [isOn]);
 
-  const zFor = (name: "settings" | "notes" | "wrapup") =>
+  const zFor = (name: (typeof WINDOWS)[number]) =>
     20 + windowOrder.indexOf(name);
 
   return (
@@ -65,6 +76,7 @@ export function MacDesktop() {
       <DesktopIcons />
       <NotificationStack />
       <LiveCuesPanel />
+      <SessionBar />
 
       {windowOrder.includes("settings") ? (
         <SettingsWindow
@@ -90,16 +102,33 @@ export function MacDesktop() {
         />
       ) : null}
 
+      {windowOrder.includes("briefing") ? (
+        <BriefingWindow
+          z={zFor("briefing")}
+          onClose={() => closeWindow("briefing")}
+          onFocus={() => focusWindow("briefing")}
+        />
+      ) : null}
+
+      {windowOrder.includes("actions") ? (
+        <ActionsWindow
+          z={zFor("actions")}
+          onClose={() => closeWindow("actions")}
+          onFocus={() => focusWindow("actions")}
+        />
+      ) : null}
+
       {hint && !isOn ? (
         <div className="pointer-events-none absolute inset-x-0 top-14 z-20 flex justify-center px-4">
           <p className="rounded-full bg-ink/55 px-3 py-1.5 text-center text-sm text-fg/90">
-            Click the menu extra or press {formatHotkey(hotkey)}
+            Click the menu extra or press {formatHotkey(hotkey)} — start the
+            next call, a 1:1, or standup
           </p>
         </div>
       ) : null}
 
       {isOn ? (
-        <p className="pointer-events-none absolute bottom-24 left-1/2 z-20 hidden -translate-x-1/2 rounded-full bg-ink/50 px-3 py-1 text-micro text-muted sm:block">
+        <p className="pointer-events-none absolute bottom-[7.5rem] left-1/2 z-20 hidden -translate-x-1/2 rounded-full bg-ink/50 px-3 py-1 text-micro text-muted sm:block">
           Desktop icons hidden · Focus on
           {listening ? " · Listening" : ""}
         </p>

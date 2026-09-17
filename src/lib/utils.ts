@@ -55,6 +55,26 @@ export function formatRelative(iso: string, now = Date.now()) {
   return delta >= 0 ? `in ${days}d` : `${days}d ago`;
 }
 
+export function formatElapsed(ms: number) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h}:${pad2(m)}:${pad2(s)}`;
+  return `${m}:${pad2(s)}`;
+}
+
+export function remainingLabel(endIso: string, now = Date.now()) {
+  const left = new Date(endIso).getTime() - now;
+  if (left <= 0) return "over";
+  const mins = Math.round(left / 60000);
+  if (mins < 1) return "<1 min left";
+  if (mins < 60) return `${mins} min left`;
+  const hours = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem ? `${hours}h ${rem}m left` : `${hours}h left`;
+}
+
 export function noteFilename(d: Date) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}.md`;
 }

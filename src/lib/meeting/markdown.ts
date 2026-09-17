@@ -1,3 +1,5 @@
+import type { CalendarEvent } from "./types";
+
 function escapeHtml(s: string) {
   return s
     .replace(/&/g, "\u0026amp;")
@@ -56,6 +58,9 @@ export function buildNoteMarkdown(input: {
   eventEnd?: string;
   conferenceUrl?: string;
   conferenceLabel?: string;
+  attendees?: string[];
+  agenda?: string[];
+  talkingPoints?: string;
 }) {
   const started = input.startedAt.toLocaleString(undefined, {
     dateStyle: "medium",
@@ -83,8 +88,49 @@ export function buildNoteMarkdown(input: {
       `- Join (${input.conferenceLabel ?? "call"}): ${input.conferenceUrl}`,
     );
   }
-  lines.push("", "## Notes", "", "");
+  if (input.attendees?.length) {
+    lines.push(`- Attendees: ${input.attendees.join(", ")}`);
+  }
+  if (input.agenda?.length) {
+    lines.push("", "## Agenda", "");
+    for (const item of input.agenda) lines.push(`- ${item}`);
+  }
+  if (input.talkingPoints?.trim()) {
+    lines.push("", "## Talking points", "", input.talkingPoints.trim());
+  }
+  lines.push(
+    "",
+    "## Notes",
+    "",
+    "",
+    "## Actions",
+    "",
+    "",
+    "## Decisions",
+    "",
+    "",
+    "## Parked",
+    "",
+    "",
+    "## Open questions",
+    "",
+    "",
+  );
   return lines.join("\n");
+}
+
+export function briefingFromEvent(event: CalendarEvent | null) {
+  if (!event) return null;
+  return {
+    title: event.title,
+    attendees: event.attendees ?? [],
+    agenda: event.agenda ?? [],
+    notes: event.notes ?? "",
+    conferenceUrl: event.conferenceUrl,
+    conferenceLabel: event.conferenceLabel,
+    start: event.start,
+    end: event.end,
+  };
 }
 
 export function buildSummaryMarkdown(input: {

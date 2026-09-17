@@ -7,23 +7,21 @@ final class CalendarService {
 
     struct LoadResult {
         var authorized: Bool
-        var event: MeetingEvent?
+        var events: [MeetingEvent]
     }
 
-    func loadNextEvent() async -> LoadResult {
+    func loadUpcoming() async -> LoadResult {
         let granted = await requestAccess()
-        guard granted else { return LoadResult(authorized: false, event: nil) }
+        guard granted else { return LoadResult(authorized: false, events: []) }
 
         let windowEnd = Date().addingTimeInterval(60 * 60 * 36)
         let predicate = store.predicateForEvents(withStart: Date(), end: windowEnd, calendars: nil)
         let events = store.events(matching: predicate)
             .filter { !$0.isAllDay }
             .sorted { $0.startDate < $1.startDate }
-
-        guard let first = events.first else {
-            return LoadResult(authorized: true, event: nil)
-        }
-        return LoadResult(authorized: true, event: map(first))
+            .prefix(8)
+            .map(map)
+        return LoadResult(authorized: true, events: Array(events))
     }
 
     private func requestAccess() async -> Bool {
@@ -43,13 +41,24 @@ final class CalendarService {
             .compactMap { $0 }
             .joined(separator: "\n")
         let found = Self.conference(in: text)
+        let attendees = (event.attendees ?? [])
+            .compactMap { $0.name }
+            .filter { !$0.isEmpty }
+        let agenda = (event.notes ?? "")
+            .split(separator: "\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { $0.hasPrefix("-") || $0.hasPrefix("*") }
+            .map { $0.replacingOccurrences(of: #"^[-*]\s*"#, with: "", options: .regularExpression) }
         return MeetingEvent(
             id: event.eventIdentifier,
             title: event.title ?? "Untitled",
             start: event.startDate,
             end: event.endDate,
             conferenceURL: found?.url ?? event.url,
-            conferenceLabel: found?.label
+            conferenceLabel: found?.label,
+            attendees: attendees,
+            notes: event.notes,
+            agenda: agenda
         )
     }
 

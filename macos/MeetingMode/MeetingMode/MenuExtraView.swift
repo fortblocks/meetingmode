@@ -9,7 +9,7 @@ struct MenuExtraView: View {
                 Text("meeting mode")
                     .font(.system(size: 13, weight: .semibold))
                 Spacer()
-                Text(state.version)
+                Text(state.isOn ? state.elapsedLabel : state.version)
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundStyle(.secondary)
             }
@@ -26,7 +26,9 @@ struct MenuExtraView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(state.isOn ? "On" : "Off")
                         .font(.system(size: 14, weight: .semibold))
-                    Text(state.isOn ? "Focus is running. Other apps are hidden." : "Flip on when the meeting is about to start.")
+                    Text(state.isOn
+                         ? "Focus is running. Capture from the HUD or here."
+                         : "Flip on when the meeting is about to start.")
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -38,59 +40,86 @@ struct MenuExtraView: View {
 
             Divider()
 
-            Group {
-                if let event = state.nextEvent {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(event.title)
-                            .font(.system(size: 13, weight: .medium))
-                            .lineLimit(2)
-                        Text("\(event.rangeLabel) · \(event.relativeLabel)")
-                            .font(.system(size: 11))
-                            .foregroundStyle(.secondary)
-                        HStack(spacing: 8) {
-                            if event.conferenceURL != nil {
-                                Button(event.conferenceLabel.map { "Join \($0)" } ?? "Join") {
-                                    state.openJoin()
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .controlSize(.small)
+            eventBlock
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+
+            if !state.isOn {
+                Divider()
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Start now")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    ForEach(MeetingTemplate.all) { t in
+                        Button {
+                            state.startMode(template: t)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(t.label)
+                                Text(t.hint)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
                             }
-                            Button("Note") { state.openNote() }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
                         }
+                        .buttonStyle(.plain)
                     }
-                } else {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(state.calendarAuthorized ? "No upcoming event" : "Calendar access needed")
-                            .font(.system(size: 13, weight: .medium))
-                        Text(state.calendarAuthorized
-                             ? "Join appears here when the next Meet, Zoom, Teams, or Webex event is on the calendar."
-                             : "Grant calendar access in Settings so the next event can sit in this extra.")
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+            }
+
+            if !state.isOn, state.events.count > 1 {
+                Divider()
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Today")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    ForEach(state.events.prefix(4)) { ev in
+                        Button {
+                            state.activeEventID = ev.id
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(ev.title).lineLimit(1)
+                                    Text(ev.rangeLabel)
+                                        .font(.system(size: 10))
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(ev.relativeLabel)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+            }
+
+            if state.isOn {
+                Divider()
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Capture")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    SessionCaptureStrip()
+                    if let last = state.captures.last {
+                        Text("\(last.kind.label) · \(last.text)")
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Button("Open note") { state.openNote() }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
+                            .lineLimit(2)
+                    }
+                    if !state.agendaItems.isEmpty {
+                        Text("Agenda \(state.agendaItems.filter { $0.done }.count)/\(state.agendaItems.count)")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
                     }
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-
-            Divider()
-
-            HStack {
-                Button(state.listening ? "Stop listening" : "Start listening") {
-                    if state.listening { state.stopListening() } else { state.requestListening() }
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                Spacer()
-            }
-            .padding(.horizontal, 14)
-            .padding(.top, 10)
 
             if let hint = state.listenHint {
                 Text(hint)
@@ -99,6 +128,26 @@ struct MenuExtraView: View {
                     .padding(.horizontal, 14)
                     .padding(.top, 6)
             }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 2) {
+                Button(state.listening ? "Stop listening" : "Start listening") {
+                    if state.listening { state.stopListening() } else { state.requestListening() }
+                }
+                Button("Briefing") { state.openBriefing() }
+                Button("Open actions") { state.openInbox() }
+                Button("Open note") { state.openNoteEditor() }
+                if state.isOn {
+                    Button(state.wrapBusy ? "Wrapping…" : "Wrap up now") {
+                        Task { await state.requestWrapUp() }
+                    }
+                    .disabled(state.wrapBusy)
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 14)
+            .padding(.top, 8)
 
             Spacer(minLength: 8)
 
@@ -116,5 +165,66 @@ struct MenuExtraView: View {
             .padding(.bottom, 12)
         }
         .frame(width: 320)
+    }
+
+    @ViewBuilder
+    private var eventBlock: some View {
+        if state.isOn {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(state.sessionTitle)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(2)
+                if let event = state.activeEvent {
+                    Text("\(event.rangeLabel) · \(event.remainingLabel)")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                    if event.conferenceURL != nil {
+                        Button(event.conferenceLabel.map { "Join \($0)" } ?? "Join") {
+                            state.openJoin()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    }
+                }
+            }
+        } else if let event = state.events.first {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(event.title)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(2)
+                Text("\(event.rangeLabel) · \(event.relativeLabel)")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                if !event.attendees.isEmpty {
+                    Text(event.attendees.joined(separator: " · "))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                HStack(spacing: 8) {
+                    if event.conferenceURL != nil {
+                        Button(event.conferenceLabel.map { "Join \($0)" } ?? "Join") {
+                            state.openJoin()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    }
+                    Button("Note") { state.openNoteEditor() }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(state.calendarAuthorized ? "No upcoming event" : "Calendar access needed")
+                    .font(.system(size: 13, weight: .medium))
+                Text(state.calendarAuthorized
+                     ? "Start a 1:1 or standup below, or wait for the next Meet / Zoom / Teams event."
+                     : "Grant calendar access in Settings so the next event can sit in this extra.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
     }
 }

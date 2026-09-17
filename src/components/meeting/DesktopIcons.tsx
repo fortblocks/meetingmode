@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
-import { useMeeting } from "@/lib/meeting/store";
+import { selectOpenActionCount, useMeeting } from "@/lib/meeting/store";
 import { cn } from "@/lib/utils";
 
 export function DesktopIcons() {
   const hidden = useMeeting((s) => s.isOn);
   const notes = useMeeting((s) => s.notes);
+  const openCount = useMeeting(selectOpenActionCount);
   const focusWindow = useMeeting((s) => s.focusWindow);
 
   return (
@@ -25,7 +26,11 @@ export function DesktopIcons() {
       >
         <FolderGlyph />
       </DesktopIcon>
-      <DesktopIcon label="Documents" onClick={() => focusWindow("notes")}>
+      <DesktopIcon
+        label="Open actions"
+        onClick={() => focusWindow("actions")}
+        badge={openCount ? String(openCount) : undefined}
+      >
         <DocsGlyph />
       </DesktopIcon>
     </div>

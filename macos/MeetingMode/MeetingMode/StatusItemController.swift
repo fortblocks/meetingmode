@@ -17,7 +17,7 @@ final class StatusItemController {
 
         popover.behavior = .transient
         popover.animates = true
-        popover.contentSize = NSSize(width: 320, height: 360)
+        popover.contentSize = NSSize(width: 320, height: 520)
         popover.contentViewController = NSHostingController(
             rootView: MenuExtraView().environmentObject(state)
         )
@@ -28,9 +28,19 @@ final class StatusItemController {
             queue: .main
         ) { [weak self] _ in
             Task { @MainActor in
-                self?.item.button?.image = StatusItemController.icon(on: AppState.shared.isOn)
+                self?.refreshButton()
             }
         }
+        NotificationCenter.default.addObserver(
+            forName: .init("MeetingMode.Tick"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.refreshButton()
+            }
+        }
+        refreshButton()
     }
 
     @objc private func togglePopover() {
@@ -38,8 +48,21 @@ final class StatusItemController {
         if popover.isShown {
             popover.performClose(nil)
         } else {
+            popover.contentSize = NSSize(width: 320, height: state.isOn ? 560 : 420)
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
+        }
+    }
+
+    @MainActor
+    private func refreshButton() {
+        item.button?.image = StatusItemController.icon(on: AppState.shared.isOn)
+        if AppState.shared.isOn {
+            item.button?.title = " \(AppState.shared.elapsedLabel)"
+        } else if let ev = AppState.shared.activeEvent {
+            item.button?.title = " \(ev.relativeLabel)"
+        } else {
+            item.button?.title = ""
         }
     }
 

@@ -77,13 +77,28 @@ export function SettingsWindow({
               label="Mic auto-offer"
             />
           </Row>
+          <Row label="Warn 5 minutes before the calendar end">
+            <MacSwitch
+              checked={settings.warnBeforeEnd}
+              onChange={(v) => patchSettings({ warnBeforeEnd: v })}
+              label="End warning"
+            />
+          </Row>
         </Section>
 
-        <Section title="Focus">
+        <Section title="Capture">
           <p className="text-muted">
-            This desktop simulates Focus with a Do Not Disturb moon in the menu
-            bar. On Mac, Meeting Mode uses the Focus API when the system allows
-            it; otherwise DND is best-effort and may not silence every banner.
+            During a meeting, type in the session bar. Prefixes:{" "}
+            <code className="font-mono text-fg">/a</code> action,{" "}
+            <code className="font-mono text-fg">/d</code> decision,{" "}
+            <code className="font-mono text-fg">/p</code> parked,{" "}
+            <code className="font-mono text-fg">/q</code> question. Owners:
+            {" "}
+            <code className="font-mono text-fg">Alex: …</code> or{" "}
+            <code className="font-mono text-fg">@Alex</code>, dues like{" "}
+            <code className="font-mono text-fg">Friday</code>. Actions land in
+            the inbox as well as the note. Wrap-up uses what you captured even
+            if Listening stayed off.
           </p>
         </Section>
 
@@ -214,9 +229,9 @@ export function SettingsWindow({
 
         <Section title="Privacy">
           <p className="text-muted">
-            Nothing is uploaded unless Listening or wrap-up is on. Audio and
-            the meeting context go to xAI; notes live in {NOTES_PATH}. Settings
-            are stored as {SETTINGS_PATH}.
+            Nothing is uploaded unless Listening, Prep, or wrap-up is on. Audio
+            and the meeting context go to xAI; notes live in {NOTES_PATH}.
+            Settings are stored as {SETTINGS_PATH}.
           </p>
         </Section>
       </div>

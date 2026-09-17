@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { LiveCues, WrapUpResult } from "./types";
+import type { LiveCues, PrepResult, WrapUpResult } from "./types";
 
 const MODEL = "grok-4.5";
 
@@ -59,6 +59,8 @@ export const wrapUpMeeting = createServerFn({ method: "POST" })
       title: string;
       notes: string;
       transcript: string;
+      agendaCovered?: string;
+      agendaSkipped?: string;
       userKey?: string;
     }) => input,
   )
@@ -71,15 +73,21 @@ export const wrapUpMeeting = createServerFn({ method: "POST" })
   "open_questions": [""],
   "followup_email": ""
 }
-Rules: no invented facts or numbers. If owner is unknown use "Unassigned". due is YYYY-MM-DD or "". followup_email is a plain email body ready to send. Keep summary to 2-5 sentences.`;
+Rules: no invented facts or numbers. If owner is unknown use "Unassigned". due is YYYY-MM-DD or "". followup_email is a plain email body ready to send. Keep summary to 2-5 sentences. Mention skipped agenda only if listed.`;
 
     const user = `Event title: ${data.title}
 
 User notes:
 ${data.notes || "(none)"}
 
-Transcript:
-${data.transcript}`;
+Transcript / captures:
+${data.transcript}
+
+Agenda covered:
+${data.agendaCovered || "(none marked)"}
+
+Agenda skipped:
+${data.agendaSkipped || "(none)"}`;
 
     const result = await chat({
       system,
@@ -111,7 +119,12 @@ ${data.transcript}`;
   });
 
 function offlineWrapUp(
-  data: { title: string; notes: string; transcript: string },
+  data: {
+    title: string;
+    notes: string;
+    transcript: string;
+    agendaSkipped?: string;
+  },
   error: string,
 ): WrapUpResult {
   const lines = data.transcript
@@ -121,20 +134,119 @@ function offlineWrapUp(
   const decisions = lines
     .filter((l) => /decision:/i.test(l))
     .map((l) => l.replace(/^.*decision:\s*/i, ""));
+  const actions = lines
+    .filter((l) => /^action:/i.test(l))
+    .map((l) => {
+      const text = l.replace(/^action:\s*/i, "");
+      const m = text.match(/^(.+?)\s*\(([^,)]+)(?:,\s*([^)]+))?\)$/);
+      if (m) {
+        return { owner: m[2].trim(), task: m[1].trim(), due: (m[3] ?? "").trim() };
+      }
+      return { owner: "Unassigned", task: text, due: "" };
+    });
   return {
     summary: `Offline draft for “${data.title}”. ${lines.slice(0, 3).join(" ")}`.trim(),
     decisions: decisions.length ? decisions : ["None captured offline."],
-    actions: [
-      {
-        owner: "Unassigned",
-        task: "Review transcript and confirm owners",
-        due: "",
-      },
-    ],
-    open_questions: lines
-      .filter((l) => /open question|still needs|\?/i.test(l))
-      .slice(0, 4),
+    actions: actions.length
+      ? actions
+      : [
+          {
+            owner: "Unassigned",
+            task: "Review transcript and confirm owners",
+            due: "",
+          },
+        ],
+    open_questions: [
+      ...lines.filter((l) => /open question|still needs|\?/i.test(l)).slice(0, 4),
+      ...(data.agendaSkipped
+        ? data.agendaSkipped
+            .split("\n")
+            .map((s) => s.replace(/^[-*]\s*/, "").trim())
+            .filter(Boolean)
+            .map((s) => `Skipped agenda: ${s}`)
+        : []),
+    ].slice(0, 6),
     followup_email: `Hi all,\n\nNotes from ${data.title}:\n\n${data.notes || "(add notes)"}\n\nThanks`,
+    source: "offline",
+    error,
+  };
+}
+
+export const prepMeeting = createServerFn({ method: "POST" })
+  .validator(
+    (input: {
+      title: string;
+      attendees: string;
+      agenda: string;
+      lastNotes: string;
+      openActions: string;
+      userContext: string;
+      userKey?: string;
+    }) => input,
+  )
+  .handler(async ({ data }): Promise<PrepResult> => {
+    const system = `You prep someone for a meeting they are about to join. Output JSON only:
+{ "talkingPoints": [""], "remember": [""], "questions": [""] }
+Max 5 items each, max 16 words each. No invented facts, numbers, or people. Use only the notes and open actions provided. If something is missing, omit it.`;
+
+    const user = `Meeting: ${data.title}
+Attendees: ${data.attendees || "(none listed)"}
+Agenda:
+${data.agenda || "(none)"}
+User context: ${data.userContext}
+
+Last related notes:
+${data.lastNotes || "(none)"}
+
+Open actions for this room:
+${data.openActions || "(none)"}`;
+
+    const result = await chat({
+      system,
+      user,
+      maxTokens: 400,
+      userKey: data.userKey,
+    });
+    if (!result.ok) {
+      return offlinePrep(data, result.error);
+    }
+    const parsed = extractJson<Omit<PrepResult, "source" | "error">>(
+      result.text,
+    );
+    if (!parsed) return offlinePrep(data, "Could not parse prep JSON");
+    return {
+      talkingPoints: (parsed.talkingPoints ?? []).filter(Boolean).slice(0, 5),
+      remember: (parsed.remember ?? []).filter(Boolean).slice(0, 5),
+      questions: (parsed.questions ?? []).filter(Boolean).slice(0, 5),
+      source: "grok",
+    };
+  });
+
+function offlinePrep(
+  data: { agenda: string; lastNotes: string; openActions: string },
+  error: string,
+): PrepResult {
+  const talkingPoints = data.agenda
+    .split("\n")
+    .map((l) => l.replace(/^[-*]\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  const remember = data.openActions
+    .split("\n")
+    .map((l) => l.replace(/^[-*]\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  const questions = data.lastNotes
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.endsWith("?"))
+    .slice(0, 3);
+  return {
+    talkingPoints: talkingPoints.length
+      ? talkingPoints
+      : ["Open with what changed since last time."],
+    remember,
+    questions,
     source: "offline",
     error,
   };
