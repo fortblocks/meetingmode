@@ -19,9 +19,9 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "A local menu-bar ritual for calls: Focus, a dated note, Join from calendar, and optional Grok listening.",
+          "Meetings, with a ritual. Focus, a dated note, Join from the calendar, and optional listening — only after you say so.",
       },
-      { name: "theme-color", content: "#121316" },
+      { name: "theme-color", content: "#ffffff" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
