@@ -70,6 +70,17 @@
     font-family: var(--font-sans);
   }
 
+  .mm-market {
+    color: #111111;
+    background: #ffffff;
+    font-feature-settings: "ss01" on, "cv11" on;
+  }
+
+  .mm-market a {
+    text-decoration: none;
+    color: inherit;
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
