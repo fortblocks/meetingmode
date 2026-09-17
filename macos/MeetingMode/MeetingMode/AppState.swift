@@ -37,6 +37,7 @@ final class AppState: ObservableObject {
             if listening { stopListening() }
             FocusService.stop()
         }
+        NotificationCenter.default.post(name: .init("MeetingMode.FocusChanged"), object: nil)
     }
 
     func openJoin() {
