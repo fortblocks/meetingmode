@@ -95,16 +95,16 @@ export function Landing() {
           </nav>
           <div className="flex items-center gap-2">
             <Link
-              to="/app"
+              to="/preview"
               className="hidden rounded-full px-3.5 py-1.5 text-[14px] text-black/70 hover:bg-black/4 sm:inline-flex"
             >
-              Open desktop
+              Preview
             </Link>
             <Link
               to="/app"
               className="inline-flex rounded-full bg-[#111111] px-3.5 py-1.5 text-[14px] font-medium text-white hover:bg-black"
             >
-              Start trial
+              Download for Mac
             </Link>
           </div>
         </div>
@@ -127,7 +127,7 @@ export function Landing() {
               to="/app"
               className="inline-flex rounded-full bg-[#111111] px-5 py-2.5 text-[15px] font-medium text-white hover:bg-black"
             >
-              Open the desktop
+              Download for Mac
             </Link>
             <a
               href="#pricing"
@@ -146,13 +146,13 @@ export function Landing() {
                 <span className="size-2.5 rounded-full bg-[#febc2e]" />
                 <span className="size-2.5 rounded-full bg-[#28c840]" />
                 <p className="ml-2 text-[12px] text-black/40">
-                  meetingmode.xyz/app — live, not a mock
+                  meetingmode.xyz/preview — live, not a mock
                 </p>
               </div>
               <div className="relative aspect-[16/10] bg-ink">
                 <iframe
                   title="Meeting Mode desktop"
-                  src="/app?embed=1"
+                  src="/preview?embed=1"
                   className="absolute inset-0 size-full border-0"
                 />
               </div>
@@ -248,7 +248,7 @@ export function Landing() {
                   to="/app"
                   className="mt-8 inline-flex rounded-full border border-black/12 px-4 py-2 text-[14px] font-medium hover:bg-black/[0.03]"
                 >
-                  Open trial
+                  Download trial
                 </Link>
               </article>
               <article className="rounded-2xl border border-black/80 bg-[#111] p-7 text-white">
@@ -271,7 +271,7 @@ export function Landing() {
                   to="/app"
                   className="mt-8 inline-flex rounded-full bg-white px-4 py-2 text-[14px] font-medium text-[#111] hover:bg-white/90"
                 >
-                  Start Pro
+                  Download Pro
                 </Link>
               </article>
             </div>
@@ -284,7 +284,7 @@ export function Landing() {
           <Wordmark className="text-[13px] text-black/70" />
           <p>A local ritual for calls. Notes stay on the machine.</p>
           <Link to="/app" className="hover:text-black">
-            Open desktop →
+            Download for Mac →
           </Link>
         </div>
       </footer>
