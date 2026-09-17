@@ -6,6 +6,5 @@ enum FocusService {
     }
 
     static func stop() {
-        // Notes stay on disk. Other apps remain where the user left them.
     }
 }

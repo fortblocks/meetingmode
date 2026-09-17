@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MacDesktop } from "@/components/meeting/MacDesktop";
+import { Download } from "@/components/marketing/Download";
 
 export const Route = createFileRoute("/app")({
-  ssr: false,
-  component: AppDesktop,
+  component: AppDownload,
 });
 
-function AppDesktop() {
-  return <MacDesktop />;
+function AppDownload() {
+  return <Download />;
 }
