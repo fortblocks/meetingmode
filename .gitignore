@@ -1,0 +1,23 @@
+node_modules/
+.vercel/
+.tanstack/
+dist/
+.output/
+.nitro/
+.wrangler/
+screenshots/
+artifacts/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.project_id
+.node_modules.lock
+
+# App Builder sandbox-only
+AGENTS.md
+AGENTS.project.md
+startup.sh
+.grok/*
+!.grok/app-env.json

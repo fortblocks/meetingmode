@@ -1,0 +1,195 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-ink: #121316;
+  --color-ink-soft: #1c1d22;
+  --color-elevated: #26272d;
+  --color-elevated-2: #303137;
+  --color-fg: #f3f3f5;
+  --color-muted: #9a9aa4;
+  --color-subtle: #6d6d76;
+  --color-line: color-mix(in oklab, #f3f3f5 12%, transparent);
+  --color-line-strong: color-mix(in oklab, #f3f3f5 22%, transparent);
+  --color-silver: #c5cdd8;
+  --color-silver-fg: #121316;
+  --color-sage: #6d9b7c;
+  --color-sage-fg: #0e1712;
+  --color-paper: #f4f0e6;
+  --color-paper-fg: #1c1a16;
+  --color-paper-muted: #6b6458;
+  --color-danger: #c96b63;
+  --color-warn: #c4a574;
+  --color-close: #ff5f57;
+  --color-min: #febc2e;
+  --color-zoom: #28c840;
+  --color-menubar: rgba(16, 16, 18, 0.55);
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  --text-micro: 0.6875rem;
+  --text-menubar: 0.8125rem;
+  --text-ui: 0.875rem;
+
+  --shadow-window:
+    0 18px 50px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-popover:
+    0 14px 40px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --shadow-banner:
+    0 10px 30px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-quick: 150ms;
+  --motion-fast: 250ms;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100%;
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-ink);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.mac-blur {
+  background: color-mix(in oklab, var(--color-ink-soft) 78%, transparent);
+  backdrop-filter: blur(22px) saturate(1.35);
+}
+
+.icon-pulse {
+  animation: iconPulse 1.6s var(--ease-out) infinite;
+}
+
+@keyframes iconPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.icons-hide {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.stagger-in > * {
+  animation: fadeUp 400ms var(--ease-out) both;
+}
+.stagger-in > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger-in > *:nth-child(2) {
+  animation-delay: 40ms;
+}
+.stagger-in > *:nth-child(3) {
+  animation-delay: 80ms;
+}
+.stagger-in > *:nth-child(4) {
+  animation-delay: 120ms;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.md-body h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.8rem;
+}
+.md-body h2 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 1.25rem 0 0.45rem;
+  color: var(--color-paper-fg);
+}
+.md-body p {
+  margin: 0 0 0.65rem;
+  line-height: 1.55;
+  color: var(--color-paper-fg);
+}
+.md-body ul {
+  margin: 0 0 0.8rem;
+  padding-left: 1.1rem;
+}
+.md-body li {
+  margin: 0.2rem 0;
+  line-height: 1.45;
+}
+.md-body code {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: color-mix(in oklab, var(--color-paper-fg) 8%, transparent);
+  padding: 0.05em 0.35em;
+  border-radius: 4px;
+}
+.md-body a {
+  color: color-mix(in oklab, #3d5c8a 80%, var(--color-paper-fg));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.capture-hidden {
+  outline: 1px dashed color-mix(in oklab, var(--color-warn) 70%, transparent);
+  outline-offset: 2px;
+}
