@@ -4,25 +4,31 @@ A local menu-bar ritual for calls: **Focus**, a dated note, **Join** from calend
 
 Live: [meetingmode.xyz](https://meetingmode.xyz)
 
-Marketing site at `/`. In-browser macOS desktop at [`/app`](https://meetingmode.xyz/app) — status item, settings, notes, wrap-up, and live cues.
+- Marketing at [`/`](https://meetingmode.xyz)
+- Download the Mac app at [`/app`](https://meetingmode.xyz/app)
+- In-browser desktop preview at [`/preview`](https://meetingmode.xyz/preview)
+- Native Xcode project: [`macos/MeetingMode/MeetingMode.xcodeproj`](macos/MeetingMode/MeetingMode.xcodeproj)
 
-## Try it
+## Test as a real user (Mac)
 
-1. Open [meetingmode.xyz](https://meetingmode.xyz) or skip straight to [the desktop](https://meetingmode.xyz/app)
-2. Click **Meeting Mode** in the menu bar (or press Control-Option-M / Ctrl+Alt+M)
-3. Flip **On** when a meeting is about to start
-4. Use **Join** on the calendar offer, then **Listening** after the consent sheet if you want wrap-up and live cues
+This sandbox cannot sign a `.app`. You compile 0.1.0 locally:
 
-Wrap-up and live cues need an xAI API key. Set `XAI_API_KEY` on the Vercel project (Production).
+1. Download the [source zip](https://github.com/fortblocks/meetingmode/archive/refs/heads/main.zip) from [meetingmode.xyz/app](https://meetingmode.xyz/app), or clone this repo
+2. Open `macos/MeetingMode/MeetingMode.xcodeproj` in Xcode 15+
+3. Signing & Capabilities → your Team (Personal Team is fine)
+4. Product → Run (⌘R)
+5. Look in the **menu bar** for the focus-ring extra. Shortcut: **Control-Option-M**
 
-## Deploy
+Notes write to `~/Meeting Mode/YYYY-MM-DD.md`. Calendar Join needs Calendar permission. Listening is a consent sheet only in 0.1.0 — wrap-up and live cues land in the next signed version on `/app`.
 
-Import [fortblocks/meetingmode](https://github.com/fortblocks/meetingmode) into the Vercel team, then:
+## Publish a version to the download page
 
-1. Turn **Deployment Protection** off so the public site is not behind Vercel login
-2. Add the domain `meetingmode.xyz` (and `www` if you want it)
-3. Set env `XAI_API_KEY` and `VITE_AUTH_ENABLED=false`
+1. Product → Archive, then zip `Meeting Mode.app` as `MeetingMode-0.2.0.zip`
+2. Add the zip under `public/releases/`
+3. Add a row in `src/components/marketing/Download.tsx`
 
 ## Stack
 
-TanStack Start, React, Tailwind. No accounts. Preferences and notes stay in the browser.
+TanStack Start, React, Tailwind for the site. Native app is Swift + SwiftUI + EventKit. No accounts. Preferences and notes stay on the machine.
+
+Wrap-up and live cues in the browser preview need `XAI_API_KEY` on the Vercel project and `VITE_AUTH_ENABLED=false`.
