@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MacDesktop } from "@/components/meeting/MacDesktop";
+import { Landing } from "@/components/marketing/Landing";
 
 export const Route = createFileRoute("/")({
-  ssr: false,
   component: Home,
 });
 
 function Home() {
-  return <MacDesktop />;
+  return <Landing />;
 }
