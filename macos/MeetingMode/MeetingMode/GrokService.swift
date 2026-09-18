@@ -71,19 +71,25 @@ enum GrokService {
     }
 
     static func offline(title: String, notes: String, transcript: String, error: String) -> WrapUp {
-        let lines = transcript.split(separator: "\n").map(String.init).filter { !$0.isEmpty }
+        let lines = transcript
+            .components(separatedBy: "\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
         let decisions = lines.filter { $0.lowercased().contains("decision") }
         let actions = lines.filter {
             let l = $0.lowercased()
             return l.hasPrefix("action") || l.contains("action:")
         }
+        let head = Array(lines.prefix(3)).joined(separator: " ")
+        let questions = Array(lines.filter { $0.contains("?") }.prefix(4))
         return WrapUp(
-            summary: "Offline draft for “\(title)”. \(lines.prefix(3).joined(separator: " "))".trimmingCharacters(in: .whitespaces),
+            summary: "Offline draft for “\(title)”. \(head)".trimmingCharacters(in: .whitespaces),
             decisions: decisions.isEmpty ? ["None captured offline."] : decisions,
             actions: actions.isEmpty ? ["Review the note and confirm owners"] : actions,
-            questions: lines.filter { $0.contains("?") }.prefix(4).map(String.init),
+            questions: questions,
             followup: "Hi all,\n\nNotes from \(title):\n\n\(notes)\n\nThanks",
             source: "offline · \(error)"
         )
     }
+
 }

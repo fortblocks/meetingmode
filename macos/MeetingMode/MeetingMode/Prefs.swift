@@ -55,7 +55,7 @@ struct Capture: Identifiable, Equatable {
             }
         }
         var label: String {
-            rawValue.prefix(1).uppercased() + rawValue.dropFirst()
+            String(rawValue.prefix(1)).uppercased() + String(rawValue.dropFirst())
         }
     }
 
@@ -65,7 +65,7 @@ struct Capture: Identifiable, Equatable {
         var kind = fallback
         var rest = t
         if t.hasPrefix("/"), t.count > 2 {
-            let tag = t.dropFirst().prefix(1).lowercased()
+            let tag = String(t.dropFirst().prefix(1)).lowercased()
             let body = t.dropFirst(2).trimmingCharacters(in: .whitespaces)
             let map: [String: Kind] = [
                 "a": .action, "d": .decision, "p": .parked, "q": .question, "n": .note,

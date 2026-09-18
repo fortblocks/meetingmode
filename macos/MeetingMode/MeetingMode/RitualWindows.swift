@@ -72,7 +72,7 @@ struct BriefingView: View {
                 if !open.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Open from last time").font(.caption).foregroundStyle(.secondary)
-                        ForEach(open.prefix(5)) { item in
+                        ForEach(Array(open.prefix(5))) { item in
                             Button {
                                 state.toggleInbox(item.id)
                             } label: {

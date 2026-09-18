@@ -74,7 +74,7 @@ struct MenuExtraView: View {
                     Text("Today")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(.secondary)
-                    ForEach(state.events.prefix(4)) { ev in
+                    ForEach(Array(state.events.prefix(4))) { ev in
                         Button {
                             state.activeEventID = ev.id
                         } label: {
