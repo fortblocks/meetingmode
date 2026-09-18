@@ -9,6 +9,14 @@ const XCODE_PATH =
 
 const versions = [
   {
+    version: "0.3.1",
+    date: "18 Sep 2026",
+    channel: "Source · Xcode",
+    href: SOURCE_ZIP,
+    notes:
+      "Link Google Calendar: Mac Calendar access, add a Google account, or paste a secret iCal address so the next real event sits in the extra.",
+  },
+  {
     version: "0.3.0",
     date: "17 Sep 2026",
     channel: "Source · Xcode",
@@ -73,24 +81,23 @@ export function Download() {
             href={SOURCE_ZIP}
             className="inline-flex rounded-full bg-[#111111] px-3.5 py-1.5 text-[14px] font-medium text-white hover:bg-black"
           >
-            Download 0.3.0
+            Download 0.3.1
           </a>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
         <p className="mb-6 inline-flex rounded-full border border-black/8 bg-white px-3 py-1 text-[13px] text-black/55">
-          Mac · 0.3.0
+          Mac · 0.3.1
         </p>
         <h1 className="text-[2.4rem] font-semibold leading-[1.05] tracking-[-0.055em] text-[#111] sm:text-[3.4rem]">
           Download Meeting Mode.
         </h1>
         <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-black/55 sm:text-[18px]">
           This build is the Xcode project so you can run it as a real menu-bar
-          app on your Mac. 0.3.0 is the version to sit in as a user: live
-          agenda, inbox, ad-hoc 1:1s, time warnings, prep, and wrap-up that
-          carries actions forward. Compile it locally; a signed .app still
-          comes after you archive.
+          app on your Mac. 0.3.1 links Google Calendar (Mac account or a secret
+          iCal address) on top of the 0.3 ritual. Compile it locally; a signed
+          .app still comes after you archive.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">

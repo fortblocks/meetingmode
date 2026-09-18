@@ -27,12 +27,15 @@ final class AppState: ObservableObject {
     @Published var autoOfferCalendar = Prefs.autoOfferCalendar
     @Published var saveWrapUp = Prefs.saveWrapUp
     @Published var warnBeforeEnd = Prefs.warnBeforeEnd
+    @Published var icsUrl = Prefs.icsUrl
+    @Published var calendarDenied = false
+    @Published var calendarBusy = false
     @Published var sessionTitle = "Meeting"
     @Published var agendaItems: [AgendaItem] = []
     @Published var inbox: [InboxItem] = []
     @Published var timeWarn: String?
 
-    let version = "0.3.0"
+    let version = "0.3.1"
     private var settingsWindow: NSWindow?
     private var noteWindow: NSWindow?
     private var briefingWindow: NSWindow?
@@ -92,10 +95,18 @@ final class AppState: ObservableObject {
     }
 
     func refreshCalendar() async {
+        calendarBusy = true
         let result = await CalendarService.shared.loadUpcoming()
         calendarAuthorized = result.authorized
-        events = result.events
+        calendarDenied = result.denied
+        var next = result.events
+        if !icsUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let remote = await CalendarService.shared.loadIcs(icsUrl)
+            next = CalendarService.merge(next, remote)
+        }
+        events = next
         if activeEventID == nil { activeEventID = events.first?.id }
+        calendarBusy = false
     }
 
     func toggleFocus() {
@@ -218,10 +229,23 @@ final class AppState: ObservableObject {
         Prefs.autoOfferCalendar = autoOfferCalendar
         Prefs.saveWrapUp = saveWrapUp
         Prefs.warnBeforeEnd = warnBeforeEnd
+        Prefs.icsUrl = icsUrl
+    }
+
+    func openGoogleCalendar() {
+        CalendarService.openGoogleCalendar()
+    }
+
+    func openGoogleAccountSettings() {
+        CalendarService.openInternetAccounts()
+    }
+
+    func openCalendarPrivacy() {
+        CalendarService.openCalendarPrivacy()
     }
 
     func openSettings() {
-        settingsWindow = present(settingsWindow, title: "Meeting Mode Settings", size: NSSize(width: 440, height: 520)) {
+        settingsWindow = present(settingsWindow, title: "Meeting Mode Settings", size: NSSize(width: 460, height: 620)) {
             SettingsView().environmentObject(self)
         }
     }
@@ -337,6 +361,7 @@ struct MeetingEvent: Identifiable {
     var attendees: [String] = []
     var notes: String?
     var agenda: [String] = []
+    var calendarName: String = ""
 
     var rangeLabel: String {
         let f = DateFormatter()

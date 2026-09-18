@@ -21,6 +21,7 @@ import {
 } from "./capture";
 import { SAMPLE_NOTES, SAMPLE_TRANSCRIPT, seedHistoryNotes } from "./fixtures";
 import { prepMeeting, wrapUpMeeting } from "./grok";
+import { fetchGoogleIcs } from "./ics";
 import { buildNoteMarkdown, buildSummaryMarkdown } from "./markdown";
 import { isPro } from "./pro";
 import { templateById, type MeetingTemplateId } from "./templates";
@@ -102,6 +103,8 @@ export type MeetingStore = {
   prepBusy: boolean;
   prepError: string | null;
   timeNotice: TimeNotice | null;
+  calendarError: string | null;
+  calendarBusy: boolean;
 
   hydrate: () => void;
   tick: () => void;
@@ -147,6 +150,7 @@ export type MeetingStore = {
   addManualAction: (raw: string) => void;
   requestPrep: () => Promise<void>;
   dismissTimeNotice: () => void;
+  refreshGoogleCalendar: () => Promise<void>;
 };
 
 function loadJson<T>(key: string, fallback: T): T {
@@ -242,6 +246,8 @@ export const useMeeting = create<MeetingStore>((set, get) => ({
   prepBusy: false,
   prepError: null,
   timeNotice: null,
+  calendarError: null,
+  calendarBusy: false,
 
   hydrate: () => {
     if (get().hydrated) return;
@@ -288,6 +294,9 @@ export const useMeeting = create<MeetingStore>((set, get) => ({
       fairUseStopped: usage.streamedMs >= FAIR_USE_MS,
       activeEventId: nextEvent(events)?.id ?? null,
     });
+    if (settings.googleIcsUrl.trim()) {
+      void get().refreshGoogleCalendar();
+    }
   },
 
   tick: () => {
@@ -794,6 +803,47 @@ export const useMeeting = create<MeetingStore>((set, get) => ({
   },
 
   dismissTimeNotice: () => set({ timeNotice: null }),
+
+  refreshGoogleCalendar: async () => {
+    const url = get().settings.googleIcsUrl.trim();
+    if (!url) {
+      const events = buildDemoEvents(new Date());
+      set({
+        events,
+        calendarError: null,
+        calendarBusy: false,
+        activeEventId: get().isOn
+          ? get().activeEventId
+          : (nextEvent(events)?.id ?? null),
+      });
+      return;
+    }
+    set({ calendarBusy: true, calendarError: null });
+    try {
+      const result = await fetchGoogleIcs({ data: { url } });
+      if (!result.ok) {
+        set({ calendarBusy: false, calendarError: result.error });
+        return;
+      }
+      const events = result.events;
+      set({
+        events,
+        calendarBusy: false,
+        calendarError: events.length
+          ? null
+          : "Google Calendar is linked, but nothing is coming up in the next 36 hours.",
+        activeEventId: get().isOn
+          ? get().activeEventId
+          : (nextEvent(events)?.id ?? null),
+      });
+    } catch (err) {
+      set({
+        calendarBusy: false,
+        calendarError:
+          err instanceof Error ? err.message : "Could not load Google Calendar",
+      });
+    }
+  },
 }));
 
 async function runWrapUp(

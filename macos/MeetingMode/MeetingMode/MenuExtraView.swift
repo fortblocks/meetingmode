@@ -195,6 +195,11 @@ struct MenuExtraView: View {
                 Text("\(event.rangeLabel) · \(event.relativeLabel)")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
+                if !event.calendarName.isEmpty {
+                    Text(event.calendarName)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                }
                 if !event.attendees.isEmpty {
                     Text(event.attendees.joined(separator: " · "))
                         .font(.system(size: 11))
@@ -215,15 +220,33 @@ struct MenuExtraView: View {
                 }
             }
         } else {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(state.calendarAuthorized ? "No upcoming event" : "Calendar access needed")
+            VStack(alignment: .leading, spacing: 8) {
+                Text(state.calendarDenied
+                     ? "Calendar access is off"
+                     : (state.calendarAuthorized ? "No upcoming event" : "Calendar access needed"))
                     .font(.system(size: 13, weight: .medium))
-                Text(state.calendarAuthorized
-                     ? "Start a 1:1 or standup below, or wait for the next Meet / Zoom / Teams event."
-                     : "Grant calendar access in Settings so the next event can sit in this extra.")
+                Text(state.calendarDenied
+                     ? "Allow Calendar in System Settings, then add your Google account. You can also paste a Google iCal link in Settings."
+                     : "Link Google Calendar so the next event sits here — or start a 1:1 below.")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 8) {
+                    if state.calendarDenied || !state.calendarAuthorized {
+                        Button("Allow Calendar") {
+                            Task { await state.refreshCalendar() }
+                            state.openCalendarPrivacy()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    }
+                    Button("Add Google account") { state.openGoogleAccountSettings() }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
+                Button("Open Google Calendar") { state.openGoogleCalendar() }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 11))
             }
         }
     }

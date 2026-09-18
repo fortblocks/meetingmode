@@ -150,7 +150,20 @@ export function StatusPopover() {
           </div>
         ) : (
           <div className="rounded-lg bg-elevated/80 px-3 py-2.5 text-sm text-muted">
-            No upcoming events
+            <p>No upcoming events</p>
+            <p className="mt-1 text-micro text-subtle">
+              Link Google Calendar in Settings, or start a 1:1 below.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                focusWindow("settings");
+                togglePopover(false);
+              }}
+              className="mt-2 min-h-10 rounded-md bg-silver px-3 text-sm font-semibold text-silver-fg"
+            >
+              Link Google Calendar
+            </button>
           </div>
         )}
 

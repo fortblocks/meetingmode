@@ -32,6 +32,11 @@ enum Prefs {
         get { d.object(forKey: "warnBeforeEnd") as? Bool ?? true }
         set { d.set(newValue, forKey: "warnBeforeEnd") }
     }
+
+    static var icsUrl: String {
+        get { d.string(forKey: "googleIcsUrl") ?? "" }
+        set { d.set(newValue, forKey: "googleIcsUrl") }
+    }
 }
 
 struct Capture: Identifiable, Equatable {

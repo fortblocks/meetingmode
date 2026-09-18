@@ -18,12 +18,29 @@ struct SettingsView: View {
             }
             Section("Calendar") {
                 Text(state.calendarAuthorized
-                     ? "Calendar access is on. Today’s events appear in the menu extra."
-                     : "Grant calendar access when prompted so Join can use the real next meeting.")
+                     ? "Mac Calendar is on. Google events appear once that account is in Internet Accounts, or you paste an iCal link below."
+                     : "Grant Calendar access, add your Google account to this Mac, or paste a Google iCal link.")
                     .foregroundStyle(.secondary)
-                Button("Refresh events") {
+                if state.calendarDenied {
+                    Button("Open Calendar privacy settings") { state.openCalendarPrivacy() }
+                }
+                Button("Add Google account…") { state.openGoogleAccountSettings() }
+                Button("Open Google Calendar") { state.openGoogleCalendar() }
+                Button(state.calendarBusy ? "Refreshing…" : "Refresh events") {
                     Task { await state.refreshCalendar() }
                 }
+                .disabled(state.calendarBusy)
+            }
+            Section("Google Calendar iCal") {
+                Text("Google Calendar → Settings → the calendar → Integrate calendar → Secret address in iCal format.")
+                    .foregroundStyle(.secondary)
+                TextField("https://calendar.google.com/calendar/ical/…", text: $state.icsUrl)
+                    .textFieldStyle(.roundedBorder)
+                    .onChange(of: state.icsUrl) { _, _ in state.savePrefs() }
+                    .onSubmit {
+                        state.savePrefs()
+                        Task { await state.refreshCalendar() }
+                    }
             }
             Section("Capture") {
                 Text("Type in the HUD or menu extra. Prefixes: /a action, /d decision, /p parked, /q question. Owners: Alex: … or @Alex. Dues: Friday. Actions also land in ~/Meeting Mode/inbox.json.")
@@ -47,6 +64,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 440, height: 480)
+        .frame(width: 460, height: 620)
     }
 }

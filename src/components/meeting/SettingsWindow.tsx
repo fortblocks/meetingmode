@@ -86,6 +86,30 @@ export function SettingsWindow({
           </Row>
         </Section>
 
+        <Section title="Google Calendar">
+          <p className="text-muted">
+            Paste the secret iCal address from Google Calendar → Settings → the
+            calendar → Integrate calendar. Meeting Mode fetches upcoming events
+            from that link. Nothing is stored on a server except the fetch
+            itself.
+          </p>
+          <label className="block space-y-1">
+            <span className="text-micro font-medium text-muted">
+              Secret iCal URL
+            </span>
+            <input
+              type="url"
+              autoComplete="off"
+              value={settings.googleIcsUrl}
+              onChange={(e) => patchSettings({ googleIcsUrl: e.target.value })}
+              onBlur={() => void useMeeting.getState().refreshGoogleCalendar()}
+              placeholder="https://calendar.google.com/calendar/ical/…"
+              className="h-10 w-full rounded-md bg-elevated px-3 text-sm text-fg outline-none ring-silver focus:ring-1"
+            />
+          </label>
+          <GoogleCalendarStatus />
+        </Section>
+
         <Section title="Capture">
           <p className="text-muted">
             During a meeting, type in the session bar. Prefixes:{" "}
@@ -266,6 +290,51 @@ function Row({
         {hint ? <p className="text-micro text-subtle">{hint}</p> : null}
       </div>
       {children}
+    </div>
+  );
+}
+
+function GoogleCalendarStatus() {
+  const events = useMeeting((s) => s.events);
+  const busy = useMeeting((s) => s.calendarBusy);
+  const error = useMeeting((s) => s.calendarError);
+  const url = useMeeting((s) => s.settings.googleIcsUrl);
+  const refresh = useMeeting((s) => s.refreshGoogleCalendar);
+  const linked = url.trim().length > 0;
+  const googleCount = events.filter((e) => e.calendarLabel === "Google").length;
+  return (
+    <div className="space-y-2">
+      {busy ? (
+        <p className="text-micro text-muted">Loading Google Calendar…</p>
+      ) : error ? (
+        <p className="text-micro text-danger">{error}</p>
+      ) : linked ? (
+        <p className="text-micro text-sage">
+          Linked · {googleCount || events.length} upcoming
+        </p>
+      ) : (
+        <p className="text-micro text-subtle">
+          Preview uses sample events until a Google iCal URL is pasted.
+        </p>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          disabled={busy || !linked}
+          onClick={() => void refresh()}
+          className="min-h-10 rounded-md bg-elevated px-3 text-sm font-medium disabled:opacity-50"
+        >
+          Refresh Google Calendar
+        </button>
+        <a
+          href="https://calendar.google.com/calendar/u/0/r/settings"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-10 items-center rounded-md px-3 text-sm font-medium text-muted"
+        >
+          Open Google Calendar settings
+        </a>
+      </div>
     </div>
   );
 }

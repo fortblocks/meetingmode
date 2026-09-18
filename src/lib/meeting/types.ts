@@ -85,6 +85,7 @@ export type Settings = {
   userContext: string;
   agenda: string;
   warnBeforeEnd: boolean;
+  googleIcsUrl: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -101,6 +102,7 @@ export const DEFAULT_SETTINGS: Settings = {
   userContext: "Staff engineer at a 40-person B2B product team.",
   agenda: "Pipeline, Acme renewal, staffing for Q4.",
   warnBeforeEnd: true,
+  googleIcsUrl: "",
 };
 
 export type CalendarEvent = {
@@ -115,6 +117,7 @@ export type CalendarEvent = {
   conferenceLabel?: string;
   attendees?: string[];
   agenda?: string[];
+  calendarLabel?: string;
 };
 
 export type NoteFile = {
