@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class StatusItemController {
     private let item: NSStatusItem
     private let state: AppState
@@ -54,19 +55,18 @@ final class StatusItemController {
         }
     }
 
-    @MainActor
     private func refreshButton() {
-        item.button?.image = StatusItemController.icon(on: AppState.shared.isOn)
-        if AppState.shared.isOn {
-            item.button?.title = " \(AppState.shared.elapsedLabel)"
-        } else if let ev = AppState.shared.activeEvent {
+        item.button?.image = StatusItemController.icon(on: state.isOn)
+        if state.isOn {
+            item.button?.title = " \(state.elapsedLabel)"
+        } else if let ev = state.activeEvent {
             item.button?.title = " \(ev.relativeLabel)"
         } else {
             item.button?.title = ""
         }
     }
 
-    static func icon(on: Bool) -> NSImage {
+    nonisolated static func icon(on: Bool) -> NSImage {
         let size = NSSize(width: 18, height: 18)
         let image = NSImage(size: size, flipped: false) { rect in
             let inset = rect.insetBy(dx: 2.2, dy: 2.2)

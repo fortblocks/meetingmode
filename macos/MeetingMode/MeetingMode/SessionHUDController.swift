@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class SessionHUDController {
     private var panel: NSPanel?
     private let state: AppState

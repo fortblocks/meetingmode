@@ -28,7 +28,9 @@ final class HotkeyService {
                 &hotKeyID
             )
             if hotKeyID.id == 1 {
-                DispatchQueue.main.async { service.action?() }
+                DispatchQueue.main.async {
+                    service.action?()
+                }
             }
             return noErr
         }, 1, &spec, userData, &handler)
@@ -49,5 +51,6 @@ final class HotkeyService {
         if let handler { RemoveEventHandler(handler) }
         hotKeyRef = nil
         handler = nil
+        action = nil
     }
 }

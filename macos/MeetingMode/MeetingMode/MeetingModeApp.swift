@@ -12,6 +12,7 @@ struct MeetingModeApp: App {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var status: StatusItemController?
 
@@ -20,7 +21,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         AppState.shared.start()
         status = StatusItemController(state: AppState.shared)
         HotkeyService.shared.register {
-            AppState.shared.toggleFocus()
+            Task { @MainActor in
+                AppState.shared.toggleFocus()
+            }
         }
     }
 
